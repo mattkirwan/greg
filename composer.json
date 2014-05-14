@@ -12,11 +12,12 @@
 	}],
 	"require": {
 		"php": ">=5.3.3",
-		"symfony/console": "v2.4.4"
+		"symfony/console": "v2.4.4",
+		"symfony/filesystem": "v2.4.4"
 	},
 	"autoload": {
 		"psr-4": {
-			"Greg\\": "src/"
+			"Greg\\": "src/Greg/"
 		}
 	},
 	"bin": ["bin/greg"]

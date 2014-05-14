@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+if(!is_file(__DIR__.'/../vendor/autoload.php'))
+{
+	exit('Autoload Unavailable');
+}
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+$greg = new \Greg\Console\GregApplication();
+
+$greg->run();
