@@ -1,0 +1,23 @@
+{
+	"name": "mattkirwan/greg",
+	"description": "A CLI tool for easing the creation API controller classes.",
+	"type": "library",
+	"keywords": ["auto", "generate", "class", "classes", "template", "api", "controller", "controllers"],
+	"homepage": "https://github.com/mattkirwan/greg",
+	"license": "MIT",
+	"authors": [{
+		"name": "Matt Kirwan",
+		"email": "matthewkirwan@gmail.com",
+		"homepage": "http://www.mattkirwam.com/"
+	}],
+	"require": {
+		"php": ">=5.3.3",
+		"symfony/console": "v2.4.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"Greg\\": "src/"
+		}
+	},
+	"bin": ["bin/greg"]
+}
