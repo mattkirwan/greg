@@ -15,7 +15,9 @@ class Build extends Command
 
 	protected $fs;
 
-	const TEMPLATE_DIR = 'templates/default/';
+    const TEMPLATE_DIR = 'templates/default/';
+    const TEMPLATE_CLASS_NAME = 'Package';
+    const TARGET_TEMPLATE_DIR = '/home/mattkirwan/Projects/work/lv-shipping-api/api/src/Api/';
 
 	protected function configure()
 	{
@@ -37,8 +39,22 @@ class Build extends Command
 
         if(!$this->fs->exists(self::TEMPLATE_DIR))
         {
-        	echo 'TEMPLATE DIR DOESNT EXIST';
+            echo 'TEMPLATE DIR DOESNT EXIST';
+            exit;
         }
+
+        if(!$this->fs->exists(self::TARGET_TEMPLATE_DIR))
+        {
+        	echo 'TARGET TEMPLATE DIR DOESNT EXIST';
+            exit;
+        }
+
+        $this->fs->mirror(self::TEMPLATE_DIR, self::TARGET_TEMPLATE_DIR);
+
+        $template = new \RecursiveDirectoryIterator(self::TARGET_TEMPLATE_DIR.self::TEMPLATE_CLASS_NAME);
+
+        $iter = new \RecursiveIteratorIterator($template, \RecursiveIteratorIterator::SELF_FIRST);
+
 
         if($controllers)
         {
@@ -47,6 +63,26 @@ class Build extends Command
         		
         		$controllerName = strstr($controller, '[', true);
         		
+                foreach($iter as $name => $object)
+                {
+                    if(!$iter->isDot())
+                    {
+                        $old_path = $name;
+                        $new_path = str_replace(self::TEMPLATE_CLASS_NAME, ucfirst($controllerName), $old_path);
+                        
+
+                        if($iter->isDir())
+                        {
+                            $this->fs->mkdir(self::TARGET_TEMPLATE_DIR.ucfirst($controllerName));
+                            $this->fs->mkdir($new_path);
+                            continue;
+                        }
+
+
+                        $this->fs->rename($old_path, $new_path, true);
+                    }
+                }
+
         		preg_match_all("/([crudl])/", strstr($controller, '[', false), $matches);
         		
         		$methodNames = $matches[0];
