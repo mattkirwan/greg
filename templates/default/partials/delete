@@ -1,0 +1,5 @@
+
+	public function deleteAction($id)
+	{
+		return json_encode('Delete id: '.$id);
+	}

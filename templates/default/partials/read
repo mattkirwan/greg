@@ -1,0 +1,9 @@
+
+	public function readAction($id)
+	{
+		return json_encode(array(
+			'data' => array(
+				'id' => 'apple',
+			)
+		));
+	}

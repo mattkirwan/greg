@@ -1,0 +1,5 @@
+
+	public function updateAction($id)
+	{
+		return json_encode('Update id: '.$id);
+	}

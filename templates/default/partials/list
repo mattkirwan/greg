@@ -1,0 +1,5 @@
+
+	public function listAction()
+	{
+		return json_encode(array('data' => array()));
+	}

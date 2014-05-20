@@ -15,7 +15,8 @@ class Build extends Command
 
 	protected $fs;
 
-    const TEMPLATE_DIR = 'templates/default/';
+    const TEMPLATE_DIR = 'templates/default/files/';
+    const TEMPLATE_PARTIALS_DIR = 'templates/default/partials/';
     const TEMPLATE_CLASS_NAME = 'Package';
     const TARGET_TEMPLATE_DIR = '/home/mattkirwan/Projects/work/lv-shipping-api/api/src/Api/';
 
@@ -77,42 +78,64 @@ class Build extends Command
                             $this->fs->mkdir($new_path);
                             continue;
                         }
+                        else
+                        {
+                            $this->fs->rename($old_path, $new_path, true);
+                            $new_content = str_replace(
+                                array(
+                                    'package',
+                                    'Package'),
+                                array(
+                                    strtolower($controllerName),
+                                    ucfirst($controllerName)
+                                ),
+                                file_get_contents($new_path)
+                            );
 
+                            if(!file_put_contents($new_path, $new_content))
+                            {
+                                $output->writeLn('Failed to create file: '.$new_path);
+                            }
+                            else
+                            {
+                                $output->writeLn('Created file: '.$new_path);
 
-                        $this->fs->rename($old_path, $new_path, true);
+                                preg_match_all("/([crudl])/", strstr($controller, '[', false), $matches);
+                                $methodNames = $matches[0];
+
+                                $new_controller_methods = '';
+
+                                $partials = '';
+
+                                foreach($methodNames as $method)
+                                {
+                                    switch($method)
+                                    {
+                                        case 'c':
+                                            $partials .= file_get_contents(self::TEMPLATE_PARTIALS_DIR."create");
+                                        break;
+                                        case 'r':
+                                            $partials .= file_get_contents(self::TEMPLATE_PARTIALS_DIR."read");
+                                        break;
+                                        case 'u':
+                                            $partials .= file_get_contents(self::TEMPLATE_PARTIALS_DIR."update");
+                                        break;
+                                        case 'd':
+                                            $partials .= file_get_contents(self::TEMPLATE_PARTIALS_DIR."delete");
+                                        break;
+                                        case 'l':
+                                            $partials .= file_get_contents(self::TEMPLATE_PARTIALS_DIR."list");
+                                        break;
+                                    }
+                                }
+
+                                $new_file_with_partials = str_replace('{{methods}}', $partials, file_get_contents($new_path));
+
+                                file_put_contents($new_path, $new_file_with_partials);
+                            }
+                        }
                     }
                 }
-
-        		preg_match_all("/([crudl])/", strstr($controller, '[', false), $matches);
-        		
-        		$methodNames = $matches[0];
-
-        		$output->writeLn('');
-        		$output->writeLn($controllerName);
-
-        		foreach($methodNames as $method)
-        		{
-        			switch($method)
-        			{
-        				case 'c':
-        					$output->writeLn('	create');
-        				break;
-        				case 'r':
-        					$output->writeLn('	read');
-        				break;
-        				case 'u':
-        					$output->writeLn('	update');
-        				break;
-        				case 'd':
-        					$output->writeLn('	delete');
-        				break;
-        				case 'l':
-        					$output->writeLn('	list');
-        				break;
-        			}
-        		}
-
-        		//$this->fs->mkdir(self::TEMPLATE_DIR.'api/src/'.);
         	}
         }  
 	}
